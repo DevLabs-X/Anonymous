@@ -159,6 +159,7 @@ h1 {
     font-size: clamp(1.8rem, 6vw, 2.8rem);
     color: #C2185B;
     text-shadow: 0 2px 4px rgba(255,255,255,0.3);
+    transition: all 0.4s ease; /* Added transition for scaling */
 }
 
 .buttons {
@@ -185,8 +186,8 @@ button {
 }
 button:active { transform: translateY(2px); box-shadow: none; }
 
-.yes { background: white; color: #ff4d6d; border: 2px solid #ff4d6d; }
-.no { background: white; color: #C2185B; border: 1px solid #ffccd5; }
+.yes { background: white; color: #ff4d6d; border: 2px solid #ff4d6d; z-index: 4; }
+.no { background: white; color: #C2185B; border: 1px solid #ffccd5; z-index: 5; }
 
 .yay-text {
     font-size: clamp(2.8rem, 12vw, 4.5rem);
@@ -281,6 +282,7 @@ const noBtn = document.getElementById('noBtn');
 const msg = document.getElementById('msg');
 const bearGif = document.getElementById('bearGif');
 const heartMask = document.getElementById('heartMask');
+const title = document.getElementById('title');
 
 let step = 0;
 let noClicks = 0;
@@ -360,6 +362,14 @@ noBtn.onclick = () => {
         msg.textContent = noMsgs[noClicks];
         let scaleValue = 1 + (noClicks + 1) * 0.45;
         yesBtn.style.transform = `scale(${scaleValue})`;
+        
+        // --- FIX FOR COLLISION ---
+        // Shrink and lift the title as the button gets bigger
+        let titleScale = 1 - (noClicks * 0.1); 
+        let titleLift = -(noClicks * 15);
+        title.style.transform = `scale(${titleScale}) translateY(${titleLift}px)`;
+        // -------------------------
+
         document.getElementById('btnGroup').style.gap = `${30 + (noClicks * 25)}px`;
         noClicks++;
         if(noClicks===5) {
