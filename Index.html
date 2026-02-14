@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine's Surprise</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at top, #ffd1dc, #ff8fab, #fb6f92);
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    touch-action: manipulation;
+}
+
+/* ⚡ Earthquake Animation */
+@keyframes earthquake {
+    0% { transform: translate(0px, 0px) rotate(0deg); }
+    10% { transform: translate(-5px, -3px) rotate(-1deg); }
+    30% { transform: translate(5px, 3px) rotate(1deg); }
+    50% { transform: translate(-5px, 3px) rotate(-1deg); }
+    70% { transform: translate(5px, -3px) rotate(1deg); }
+    90% { transform: translate(-2px, 3px) rotate(0deg); }
+    100% { transform: translate(0px, 0px) rotate(0deg); }
+}
+.shake-body { animation: earthquake 0.4s ease-in-out; }
+
+/* ✨ Heart Reveal Mask Animation */
+#heartMask {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: white;
+    transform: translate(-50%, -50%);
+    clip-path: path("M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z");
+    z-index: 100;
+    pointer-events: none;
+    transition: width 1s ease-in, height 1s ease-in;
+    display: none;
+}
+
+@keyframes textAppear {
+    0% { opacity: 0; transform: scale(0.9) translateY(10px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.reveal-text { animation: textAppear 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+/* 💖 Floating hearts */
+.heart {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: rgba(255,255,255,0.7);
+    transform: rotate(45deg);
+    animation: floatUp linear infinite;
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.heart::before, .heart::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: inherit;
+    border-radius: 50%;
+}
+.heart::before { top: -8px; }
+.heart::after { left: -8px; }
+
+@keyframes floatUp {
+    from { transform: translateY(110vh) rotate(45deg); opacity: 0; }
+    to { transform: translateY(-20vh) rotate(45deg); opacity: 0.8; }
+}
+
+.container {
+    text-align: center;
+    z-index: 5;
+    width: 100%;
+    padding: 20px;
+}
+
+/* 💌 Updated Envelope - Handmade Style */
+.envelope {
+    width: 260px;
+    height: 170px;
+    background: #ff4d6d;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    margin: 0 auto;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+.envelope:hover { transform: rotate(-2deg) scale(1.02); }
+
+.flap {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #ff758f;
+    clip-path: polygon(0 0, 50% 60%, 100% 0);
+    transform-origin: top;
+    transition: 0.9s;
+    border-radius: 10px;
+    z-index: 3;
+}
+.envelope.open .flap { transform: rotateX(180deg); z-index: 1; }
+
+/* 📝 Updated Letter - Scrapbook Style */
+.letter {
+    position: absolute;
+    width: 90%;
+    height: 85%;
+    background: #fffdf7;
+    top: 10%;
+    left: 5%;
+    border-radius: 5px;
+    font-family: 'Gaegu', cursive; /* Handmade font */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    opacity: 0;
+    transition: 0.6s;
+    padding: 15px;
+    color: #000000;
+    z-index: 2;
+    line-height: 1.5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transform: rotate(2deg); /* Organic tilt */
+}
+.envelope.open .letter { opacity: 1; transform: translateY(-75px) rotate(-1deg); }
+
+.proposal { display: none; width: 100%; animation: fadeIn 0.8s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+.proposal img {
+    width: 85%;
+    max-width: 320px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+}
+
+h1 {
+    font-family: 'Pacifico', cursive;
+    margin-bottom: 25px;
+    font-size: clamp(1.8rem, 6vw, 2.8rem);
+    color: #C2185B;
+    text-shadow: 0 2px 4px rgba(255,255,255,0.3);
+}
+
+.buttons {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 160px;
+}
+
+/* 🔘 Updated Buttons - Handmade Style */
+button {
+    border: none;
+    padding: 12px 28px;
+    border-radius: 15px;
+    font-size: 20px;
+    font-family: 'Gaegu', cursive;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 0px rgba(0,0,0,0.1);
+    margin: 10px;
+}
+button:active { transform: translateY(2px); box-shadow: none; }
+
+.yes { background: white; color: #ff4d6d; border: 2px solid #ff4d6d; }
+.no { background: white; color: #C2185B; border: 1px solid #ffccd5; }
+
+.yay-text {
+    font-size: clamp(2.8rem, 12vw, 4.5rem);
+    color: white;
+    font-family: 'Pacifico', cursive;
+    text-shadow: 0 0 25px rgba(255,255,255,0.8), 0 4px 10px rgba(0,0,0,0.2);
+    display: block;
+    margin-top: 20px;
+}
+
+.pulse { display: inline-block; animation: pulseHeart 1s infinite; }
+@keyframes pulseHeart {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+.message {
+    margin-top: 25px;
+    font-family: 'Pacifico', cursive;
+    font-size: 26px;
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 16px;
+    animation: burst 1.2s ease forwards;
+    z-index: 10;
+}
+@keyframes burst { to { transform: translate(var(--x), var(--y)) rotate(720deg); opacity: 0; } }
+
+@media (max-width: 480px) {
+    .envelope { width: 240px; height: 160px; }
+    .letter { font-size: 19px; }
+    button { padding: 10px 22px; font-size: 18px; }
+}
+</style>
+</head>
+
+<body id="body">
+
+<div id="heartMask"></div>
+
+<script>
+let heartColor = 'rgba(255,255,255,0.7)';
+let heartSpawnRate = 800;
+
+function hearts(n=1){
+    for(let i=0;i<n;i++){
+        const h=document.createElement('div');
+        h.className='heart';
+        h.style.background = heartColor;
+        h.style.left=Math.random()*100+'vw';
+        h.style.animationDuration=(3+Math.random()*4)+'s';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 7000);
+    }
+}
+let heartInterval = setInterval(() => hearts(2), heartSpawnRate);
+</script>
+
+<div class="container" id="mainContainer">
+    <div class="envelope" id="envelope">
+        <div class="flap"></div>
+        <div class="letter" id="letter">
+            <div id="letterText" class="reveal-text">Hey you…</div>
+        </div>
+    </div>
+
+    <div class="proposal" id="proposal">
+        <img id="bearGif" src="jump.gif">
+        <h1 id="title">Will you be my Valentine?</h1>
+
+        <div class="buttons" id="btnGroup">
+            <button class="yes" id="yesBtn">Yes</button>
+            <button class="no" id="noBtn">No</button>
+        </div>
+
+        <div class="message" id="msg"></div>
+    </div>
+</div>
+
+<script>
+const body = document.getElementById('body');
+const envelope = document.getElementById('envelope');
+const proposal = document.getElementById('proposal');
+const letterText = document.getElementById('letterText');
+const yesBtn = document.getElementById('yesBtn');
+const noBtn = document.getElementById('noBtn');
+const msg = document.getElementById('msg');
+const bearGif = document.getElementById('bearGif');
+const heartMask = document.getElementById('heartMask');
+
+let step = 0;
+let noClicks = 0;
+
+const noMsgs = ["Are you sure😏?", "Think again🥹", "You're making a mistake😒", "“Oh really? You sure about that? 🤨", "No button locked! 😌"];
+
+function shakePage() {
+    body.classList.remove('shake-body');
+    void body.offsetWidth;
+    body.classList.add('shake-body');
+}
+
+function confettiBurst(){
+    for(let i=0;i<60;i++){
+        const c=document.createElement('div');
+        c.className='confetti';
+        c.style.background = ['#ffffff', '#ffccd5', '#ff4d6d', '#C2185B'][Math.floor(Math.random()*4)];
+        c.style.left = '50%'; c.style.top = '50%';
+        c.style.setProperty('--x',(Math.random()*800-400)+'px');
+        c.style.setProperty('--y',(Math.random()*800-400)+'px');
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),1200);
+    }
+}
+
+envelope.onclick = () => {
+    step++;
+    if(step===1) {
+        envelope.classList.add('open');
+        hearts(10);
+    }
+    else if(step===2) {
+        letterText.classList.remove('reveal-text');
+        void letterText.offsetWidth;
+        letterText.innerHTML = "I just wanted to tell you something…<div style='font-size:16px; font-family:Gaegu; margin-top:20px; color: #999;'>(tap again)</div>";
+        letterText.classList.add('reveal-text');
+        clearInterval(heartInterval);
+        heartInterval = setInterval(() => hearts(3), 500);
+    }
+    else {
+        envelope.style.display='none';
+        proposal.style.display='block';
+    }
+};
+
+yesBtn.onclick = () => {
+    heartMask.style.display = 'block';
+    setTimeout(() => {
+        heartMask.style.width = '300vmax';
+        heartMask.style.height = '300vmax';
+    }, 10);
+
+    setTimeout(() => {
+        heartColor = '#ff4d6d';
+        document.querySelectorAll('.heart').forEach(h => h.style.background = heartColor);
+
+        document.getElementById('btnGroup').style.display = 'none';
+        document.getElementById('title').style.display = 'none';
+
+        msg.innerHTML = "<span class='yay-text'>Yayyy!!! <span class='pulse'>💖</span>😘</span>";
+        bearGif.src='kiss.gif';
+
+        clearInterval(heartInterval);
+        setInterval(() => hearts(15), 300);
+        confettiBurst();
+
+        setTimeout(() => {
+            heartMask.style.opacity = '0';
+            setTimeout(() => heartMask.style.display = 'none', 1000);
+        }, 500);
+    }, 800);
+};
+
+noBtn.onclick = () => {
+    shakePage();
+    if(noClicks < 5){
+        msg.textContent = noMsgs[noClicks];
+        let scaleValue = 1 + (noClicks + 1) * 0.45;
+        yesBtn.style.transform = `scale(${scaleValue})`;
+        document.getElementById('btnGroup').style.gap = `${30 + (noClicks * 25)}px`;
+        noClicks++;
+        if(noClicks===5) {
+            noBtn.style.opacity = '0.4';
+            noBtn.style.pointerEvents = 'none';
+            noBtn.innerHTML = "Locked 🔒";
+        }
+    }
+};
+</script>
+
+</body>
+</html>
